@@ -74,3 +74,4 @@ Frontend runs on http://localhost:3000 and proxies `/api` calls to http://localh
 
 Connect this repository to Vercel. Set `frontend` as root or use the included `vercel.json` at root.
 Set `VITE_API_URL` to your production backend API URL (e.g. `https://api.yourdomain.com/api/v1`).
+

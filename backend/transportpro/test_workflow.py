@@ -209,3 +209,4 @@ class TransportProWorkflowTests(TestCase):
         exp_rep_res = self.client.get('/api/v1/reports/expenses/')
         self.assertEqual(exp_rep_res.status_code, 200)
         self.assertEqual(Decimal(str(exp_rep_res.data['total_expenses'])), Decimal('18500.00'))
+
