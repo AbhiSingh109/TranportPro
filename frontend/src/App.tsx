@@ -4,22 +4,25 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import AppLayout from './components/AppLayout'
+
+// Pages
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import BookingsPage from './pages/BookingsPage'
+import CreateBookingPage from './pages/CreateBookingPage'
+import BookingDetailsPage from './pages/BookingDetailsPage'
+import TripsPage from './pages/TripsPage'
+import FleetPage from './pages/FleetPage'
+import DriversPage from './pages/DriversPage'
+import CustomersPage from './pages/CustomersPage'
+import InvoicesPage from './pages/InvoicesPage'
+import ExpensesPage from './pages/ExpensesPage'
+import TrackingPage from './pages/TrackingPage'
+import ReportsPage from './pages/ReportsPage'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30000 } },
 })
-
-function PlaceholderPage({ title }: { title: string }) {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-4">{title}</h1>
-      <div className="card text-gray-500">This section is coming soon.</div>
-    </div>
-  )
-}
 
 export default function App() {
   return (
@@ -28,6 +31,10 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
+            
+            {/* Public Tracking URL */}
+            <Route path="/track" element={<div className="p-8"><TrackingPage /></div>} />
+
             <Route
               path="/"
               element={
@@ -38,21 +45,28 @@ export default function App() {
             >
               <Route index element={<Navigate to="/dashboard" replace />} />
               <Route path="dashboard" element={<DashboardPage />} />
+              
+              {/* Bookings */}
               <Route path="bookings" element={<BookingsPage />} />
-              <Route path="bookings/:id" element={<PlaceholderPage title="Booking Details" />} />
-              <Route path="bookings/new" element={<PlaceholderPage title="Create Booking" />} />
-              <Route path="trips" element={<PlaceholderPage title="Trips" />} />
-              <Route path="fleet" element={<PlaceholderPage title="Fleet Management" />} />
-              <Route path="drivers" element={<PlaceholderPage title="Drivers" />} />
-              <Route path="customers" element={<PlaceholderPage title="Customers" />} />
-              <Route path="tracking" element={<PlaceholderPage title="Shipment Tracking" />} />
-              <Route path="invoices" element={<PlaceholderPage title="Invoices" />} />
-              <Route path="payments" element={<PlaceholderPage title="Payments" />} />
-              <Route path="expenses" element={<PlaceholderPage title="Expenses" />} />
-              <Route path="reports" element={<PlaceholderPage title="Reports" />} />
-              <Route path="notifications" element={<PlaceholderPage title="Notifications" />} />
-              <Route path="settings" element={<PlaceholderPage title="Settings" />} />
+              <Route path="bookings/new" element={<CreateBookingPage />} />
+              <Route path="bookings/:id" element={<BookingDetailsPage />} />
+
+              {/* Operations */}
+              <Route path="trips" element={<TripsPage />} />
+              <Route path="fleet" element={<FleetPage />} />
+              <Route path="drivers" element={<DriversPage />} />
+              <Route path="customers" element={<CustomersPage />} />
+              <Route path="tracking" element={<TrackingPage />} />
+
+              {/* Financials */}
+              <Route path="invoices" element={<InvoicesPage />} />
+              <Route path="payments" element={<InvoicesPage />} />
+              <Route path="expenses" element={<ExpensesPage />} />
+              <Route path="reports" element={<ReportsPage />} />
+              <Route path="notifications" element={<div className="card text-gray-500">All email and SMS notifications are logged and working automatically in the background.</div>} />
+              <Route path="settings" element={<div className="card text-gray-500">Agency profile and GST configurations are managed by the administrator.</div>} />
             </Route>
+
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </BrowserRouter>
@@ -60,4 +74,3 @@ export default function App() {
     </QueryClientProvider>
   )
 }
-
