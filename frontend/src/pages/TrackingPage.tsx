@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { publicTracking } from '../services/api'
 import { Search, MapPin, Truck, CheckCircle2, Clock, PackageCheck } from 'lucide-react'
 
 export default function TrackingPage() {
-  const [lrInput, setLrInput] = useState('')
-  const [searchedLr, setSearchedLr] = useState('')
+  const [searchParams] = useSearchParams()
+  const initialLr = searchParams.get('lr') || ''
+  const [lrInput, setLrInput] = useState(initialLr)
+  const [searchedLr, setSearchedLr] = useState(initialLr)
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['public-tracking', searchedLr],
