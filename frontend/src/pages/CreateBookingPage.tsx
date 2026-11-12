@@ -326,3 +326,4 @@ export default function CreateBookingPage() {
     </div>
   )
 }
+

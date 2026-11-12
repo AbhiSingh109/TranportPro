@@ -75,8 +75,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'transportpro.wsgi.application'
 
-# Database configuration (PostgreSQL with SQLite test/local fallback)
-if os.getenv('USE_SQLITE', 'False').lower() in ('true', '1') or 'test' in sys.argv:
+# Database configuration: defaults to SQLite for zero-config local development,
+# and switches to PostgreSQL when POSTGRES_HOST or DATABASE_URL is provided (e.g. Docker/Production).
+if os.getenv('USE_SQLITE', '').lower() in ('true', '1') or 'test' in sys.argv or not os.getenv('POSTGRES_HOST'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',

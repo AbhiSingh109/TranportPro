@@ -19,6 +19,7 @@ import InvoicesPage from './pages/InvoicesPage'
 import ExpensesPage from './pages/ExpensesPage'
 import TrackingPage from './pages/TrackingPage'
 import ReportsPage from './pages/ReportsPage'
+import NotificationsPage from './pages/NotificationsPage'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30000 } },
@@ -63,7 +64,7 @@ export default function App() {
               <Route path="payments" element={<InvoicesPage />} />
               <Route path="expenses" element={<ExpensesPage />} />
               <Route path="reports" element={<ReportsPage />} />
-              <Route path="notifications" element={<div className="card text-gray-500">All email and SMS notifications are logged and working automatically in the background.</div>} />
+              <Route path="notifications" element={<NotificationsPage />} />
               <Route path="settings" element={<div className="card text-gray-500">Agency profile and GST configurations are managed by the administrator.</div>} />
             </Route>
 

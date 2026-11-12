@@ -19,7 +19,15 @@ export default function LoginPage() {
       await login(email, password)
       navigate('/dashboard')
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Login failed. Please check your credentials.')
+      if (!err.response) {
+        setError('Unable to connect to backend server. Please ensure the Django backend is running on http://localhost:8000')
+      } else if (err.response.status === 404) {
+        setError('API endpoint not found (404). Backend server is not running or VITE_API_URL is misconfigured.')
+      } else if (err.response.status === 502 || err.response.status === 504) {
+        setError('Backend proxy error. Ensure Django is running on http://localhost:8000')
+      } else {
+        setError(err.response?.data?.error || 'Invalid email or password.')
+      }
     } finally {
       setLoading(false)
     }
@@ -74,6 +82,18 @@ export default function LoginPage() {
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
+
+        <div className="mt-6 p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-600">
+          <p className="font-bold text-slate-800 mb-1">Demo Credentials:</p>
+          <div className="flex justify-between py-0.5">
+            <span>Email:</span>
+            <span className="font-mono text-blue-700 font-semibold select-all">admin@transportpro.com</span>
+          </div>
+          <div className="flex justify-between py-0.5">
+            <span>Password:</span>
+            <span className="font-mono text-blue-700 font-semibold select-all">Admin@12345</span>
+          </div>
+        </div>
       </div>
     </div>
   )
