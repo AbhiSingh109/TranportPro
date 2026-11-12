@@ -7,6 +7,7 @@ export default function CustomersPage() {
   const queryClient = useQueryClient()
   const [searchTerm, setSearchTerm] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     customer_name: '',
     company_name: '',
@@ -29,6 +30,7 @@ export default function CustomersPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customers'] })
       setIsModalOpen(false)
+      setErrorMsg(null)
       setFormData({
         customer_name: '',
         company_name: '',
@@ -40,6 +42,14 @@ export default function CustomersPage() {
         credit_limit: '0',
         notes: '',
       })
+    },
+    onError: (err: any) => {
+      const msg = err.response?.data?.customer_name?.[0] ||
+                  err.response?.data?.phone_number?.[0] ||
+                  err.response?.data?.detail ||
+                  err.message ||
+                  'Failed to create customer'
+      setErrorMsg(typeof msg === 'string' ? msg : JSON.stringify(msg))
     },
   })
 
@@ -61,7 +71,13 @@ export default function CustomersPage() {
           <h1 className="text-2xl font-bold text-gray-900">Customers & Consignors</h1>
           <p className="text-sm text-gray-500">Manage clients, billing records, and consignor/consignee entities</p>
         </div>
-        <button onClick={() => setIsModalOpen(true)} className="btn-primary flex items-center gap-2">
+        <button
+          onClick={() => {
+            setErrorMsg(null)
+            setIsModalOpen(true)
+          }}
+          className="btn-primary flex items-center gap-2"
+        >
           <Plus size={16} /> Add Customer
         </button>
       </div>
@@ -135,6 +151,13 @@ export default function CustomersPage() {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-6">
             <h2 className="text-lg font-bold text-gray-900 mb-4">Add New Customer</h2>
+
+            {errorMsg && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2.5 rounded-lg text-sm mb-4">
+                {errorMsg}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>

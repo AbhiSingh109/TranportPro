@@ -7,6 +7,7 @@ export default function ExpensesPage() {
   const queryClient = useQueryClient()
   const [searchTerm, setSearchTerm] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     expense_date: new Date().toISOString().split('T')[0],
     category: 'fuel',
@@ -36,6 +37,7 @@ export default function ExpensesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses'] })
       setIsModalOpen(false)
+      setErrorMsg(null)
       setFormData({
         expense_date: new Date().toISOString().split('T')[0],
         category: 'fuel',
@@ -44,6 +46,13 @@ export default function ExpensesPage() {
         vehicle: '',
         trip: '',
       })
+    },
+    onError: (err: any) => {
+      const msg = err.response?.data?.amount?.[0] ||
+                  err.response?.data?.detail ||
+                  err.message ||
+                  'Failed to log expense'
+      setErrorMsg(typeof msg === 'string' ? msg : JSON.stringify(msg))
     },
   })
 
@@ -77,7 +86,13 @@ export default function ExpensesPage() {
           <h1 className="text-2xl font-bold text-gray-900">Operating Expenses</h1>
           <p className="text-sm text-gray-500">Record fuel, toll, driver allowances, maintenance, and vehicle repairs</p>
         </div>
-        <button onClick={() => setIsModalOpen(true)} className="btn-primary flex items-center gap-2">
+        <button
+          onClick={() => {
+            setErrorMsg(null)
+            setIsModalOpen(true)
+          }}
+          className="btn-primary flex items-center gap-2"
+        >
           <Plus size={16} /> Add Expense
         </button>
       </div>
@@ -136,6 +151,13 @@ export default function ExpensesPage() {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6">
             <h2 className="text-lg font-bold text-gray-900 mb-4">Log Operating Expense</h2>
+
+            {errorMsg && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2.5 rounded-lg text-sm mb-4">
+                {errorMsg}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>

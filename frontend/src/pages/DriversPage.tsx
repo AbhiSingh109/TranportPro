@@ -7,6 +7,7 @@ export default function DriversPage() {
   const queryClient = useQueryClient()
   const [searchTerm, setSearchTerm] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     full_name: '',
     phone_number: '',
@@ -29,6 +30,7 @@ export default function DriversPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['drivers'] })
       setIsModalOpen(false)
+      setErrorMsg(null)
       setFormData({
         full_name: '',
         phone_number: '',
@@ -40,6 +42,14 @@ export default function DriversPage() {
         employment_status: 'active',
         notes: '',
       })
+    },
+    onError: (err: any) => {
+      const msg = err.response?.data?.full_name?.[0] ||
+                  err.response?.data?.licence_number?.[0] ||
+                  err.response?.data?.detail ||
+                  err.message ||
+                  'Failed to add driver'
+      setErrorMsg(typeof msg === 'string' ? msg : JSON.stringify(msg))
     },
   })
 
@@ -61,7 +71,13 @@ export default function DriversPage() {
           <h1 className="text-2xl font-bold text-gray-900">Driver Roster</h1>
           <p className="text-sm text-gray-500">Manage commercial driving licences, duty status, and emergency contacts</p>
         </div>
-        <button onClick={() => setIsModalOpen(true)} className="btn-primary flex items-center gap-2">
+        <button
+          onClick={() => {
+            setErrorMsg(null)
+            setIsModalOpen(true)
+          }}
+          className="btn-primary flex items-center gap-2"
+        >
           <Plus size={16} /> Add Driver
         </button>
       </div>
@@ -132,6 +148,13 @@ export default function DriversPage() {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-6">
             <h2 className="text-lg font-bold text-gray-900 mb-4">Add Commercial Driver</h2>
+
+            {errorMsg && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2.5 rounded-lg text-sm mb-4">
+                {errorMsg}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>

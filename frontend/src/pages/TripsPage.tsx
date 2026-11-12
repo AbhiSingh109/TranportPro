@@ -7,6 +7,7 @@ export default function TripsPage() {
   const queryClient = useQueryClient()
   const [searchTerm, setSearchTerm] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     origin: '',
     destination: '',
@@ -37,6 +38,24 @@ export default function TripsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['trips'] })
       setIsModalOpen(false)
+      setErrorMsg(null)
+      setFormData({
+        origin: '',
+        destination: '',
+        departure_date: new Date().toISOString().split('T')[0],
+        expected_arrival: '',
+        vehicle: '',
+        driver: '',
+        remarks: '',
+      })
+    },
+    onError: (err: any) => {
+      const msg = err.response?.data?.origin?.[0] ||
+                  err.response?.data?.destination?.[0] ||
+                  err.response?.data?.detail ||
+                  err.message ||
+                  'Failed to create trip'
+      setErrorMsg(typeof msg === 'string' ? msg : JSON.stringify(msg))
     },
   })
 
@@ -76,7 +95,13 @@ export default function TripsPage() {
           <h1 className="text-2xl font-bold text-gray-900">Trip & Dispatch Management</h1>
           <p className="text-sm text-gray-500">Plan routes, assign fleet trucks and commercial drivers, and track transit dispatches</p>
         </div>
-        <button onClick={() => setIsModalOpen(true)} className="btn-primary flex items-center gap-2">
+        <button
+          onClick={() => {
+            setErrorMsg(null)
+            setIsModalOpen(true)
+          }}
+          className="btn-primary flex items-center gap-2"
+        >
           <Plus size={16} /> Create Trip
         </button>
       </div>
@@ -154,6 +179,13 @@ export default function TripsPage() {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6">
             <h2 className="text-lg font-bold text-gray-900 mb-4">Create New Trip</h2>
+
+            {errorMsg && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2.5 rounded-lg text-sm mb-4">
+                {errorMsg}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>

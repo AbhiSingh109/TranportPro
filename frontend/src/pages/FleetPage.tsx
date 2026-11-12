@@ -7,6 +7,7 @@ export default function FleetPage() {
   const queryClient = useQueryClient()
   const [searchTerm, setSearchTerm] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     registration_number: '',
     vehicle_type: '',
@@ -30,6 +31,7 @@ export default function FleetPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vehicles'] })
       setIsModalOpen(false)
+      setErrorMsg(null)
       setFormData({
         registration_number: '',
         vehicle_type: '',
@@ -42,6 +44,13 @@ export default function FleetPage() {
         pollution_expiry: '',
         notes: '',
       })
+    },
+    onError: (err: any) => {
+      const msg = err.response?.data?.registration_number?.[0] ||
+                  err.response?.data?.detail ||
+                  err.message ||
+                  'Failed to add vehicle'
+      setErrorMsg(typeof msg === 'string' ? msg : JSON.stringify(msg))
     },
   })
 
@@ -75,7 +84,13 @@ export default function FleetPage() {
           <h1 className="text-2xl font-bold text-gray-900">Fleet & Vehicles</h1>
           <p className="text-sm text-gray-500">Track company & leased trucks, tonnage capacities, and compliance expiry dates</p>
         </div>
-        <button onClick={() => setIsModalOpen(true)} className="btn-primary flex items-center gap-2">
+        <button
+          onClick={() => {
+            setErrorMsg(null)
+            setIsModalOpen(true)
+          }}
+          className="btn-primary flex items-center gap-2"
+        >
           <Plus size={16} /> Add Vehicle
         </button>
       </div>
@@ -147,6 +162,13 @@ export default function FleetPage() {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-6">
             <h2 className="text-lg font-bold text-gray-900 mb-4">Add Fleet Vehicle</h2>
+
+            {errorMsg && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2.5 rounded-lg text-sm mb-4">
+                {errorMsg}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>

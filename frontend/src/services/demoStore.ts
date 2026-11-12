@@ -1,7 +1,7 @@
 // Offline / Vercel demo data store with local persistence
 const STORAGE_PREFIX = 'transportpro_demo_'
 
-const initialCustomers = [
+export const initialCustomers = [
   {
     id: 1,
     customer_name: 'Tata Motors Supply Chain',
@@ -11,6 +11,7 @@ const initialCustomers = [
     gstin: '27AAACT2727Q1ZW',
     billing_address: 'Pimpri Industrial Area, Pune, Maharashtra',
     credit_limit: '1500000.00',
+    contact_person: 'Rajiv Mehra',
     is_active: true,
   },
   {
@@ -22,6 +23,7 @@ const initialCustomers = [
     gstin: '24AAACR4998K1ZT',
     billing_address: 'Reliance Corporate Park, Navi Mumbai',
     credit_limit: '2500000.00',
+    contact_person: 'Sandeep Patil',
     is_active: true,
   },
   {
@@ -33,6 +35,7 @@ const initialCustomers = [
     gstin: '27AAACM1234F1Z1',
     billing_address: 'Akurli Road, Kandivali East, Mumbai',
     credit_limit: '2000000.00',
+    contact_person: 'Vikram Shinde',
     is_active: true,
   },
   {
@@ -44,11 +47,12 @@ const initialCustomers = [
     gstin: '06AAACH1234A1Z2',
     billing_address: 'Industrial Area Phase 2, Noida, UP',
     credit_limit: '1000000.00',
+    contact_person: 'Amitabh Sen',
     is_active: true,
   },
 ]
 
-const initialVehicles = [
+export const initialVehicles = [
   {
     id: 1,
     registration_number: 'MP09AB5678',
@@ -81,7 +85,7 @@ const initialVehicles = [
   },
 ]
 
-const initialDrivers = [
+export const initialDrivers = [
   {
     id: 1,
     full_name: 'Rameshwar Yadav',
@@ -114,7 +118,7 @@ const initialDrivers = [
   },
 ]
 
-const initialBookings = [
+export const initialBookings = [
   {
     id: 1,
     booking_number: 'BK-0001-000101',
@@ -169,13 +173,14 @@ const initialBookings = [
   },
 ]
 
-const initialTrips = [
+export const initialTrips = [
   {
     id: 1,
     trip_number: 'TR-0001-000001',
     origin: 'Pune',
     destination: 'Indore',
     departure_date: '2026-11-11',
+    expected_arrival: '2026-11-13',
     vehicle: 'MH12CD9012',
     driver: 'Rameshwar Yadav',
     status: 'in_transit',
@@ -183,7 +188,7 @@ const initialTrips = [
   },
 ]
 
-const initialInvoices = [
+export const initialInvoices = [
   {
     id: 1,
     invoice_number: 'INV-0001-000001',
@@ -199,7 +204,7 @@ const initialInvoices = [
   },
 ]
 
-const initialExpenses = [
+export const initialExpenses = [
   {
     id: 1,
     expense_date: '2026-11-11',
@@ -220,7 +225,7 @@ const initialExpenses = [
   },
 ]
 
-const initialTrackingEvents = [
+export const initialTrackingEvents = [
   {
     id: 1,
     booking: 1,
@@ -246,7 +251,12 @@ function getStore<T>(key: string, defaultData: T): T {
       localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(defaultData))
       return defaultData
     }
-    return JSON.parse(raw)
+    const parsed = JSON.parse(raw)
+    if (Array.isArray(defaultData) && (!Array.isArray(parsed) || parsed.length === 0)) {
+      localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(defaultData))
+      return defaultData
+    }
+    return parsed
   } catch {
     return defaultData
   }
@@ -260,30 +270,78 @@ function setStore<T>(key: string, data: T) {
 
 export const demoStore = {
   getCustomers: () => getStore('customers', initialCustomers),
+  getCustomer: (id: number) => {
+    return demoStore.getCustomers().find((c: any) => c.id === Number(id)) || null
+  },
   addCustomer: (c: any) => {
     const list = demoStore.getCustomers()
-    const item = { ...c, id: Date.now(), is_active: true }
+    const item = {
+      ...c,
+      id: Date.now(),
+      credit_limit: c.credit_limit || '0.00',
+      is_active: c.is_active !== undefined ? c.is_active : true,
+    }
     list.unshift(item)
     setStore('customers', list)
     return item
+  },
+  updateCustomer: (id: number, patch: any) => {
+    const list = demoStore.getCustomers()
+    const idx = list.findIndex((c: any) => c.id === Number(id))
+    if (idx !== -1) {
+      list[idx] = { ...list[idx], ...patch }
+      setStore('customers', list)
+      return list[idx]
+    }
+    return null
   },
 
   getVehicles: () => getStore('vehicles', initialVehicles),
   addVehicle: (v: any) => {
     const list = demoStore.getVehicles()
-    const item = { ...v, id: Date.now() }
+    const item = {
+      ...v,
+      id: Date.now(),
+      status: v.status || 'available',
+      capacity_tons: v.capacity_tons || '10.00',
+      ownership_type: v.ownership_type || 'owned',
+    }
     list.unshift(item)
     setStore('vehicles', list)
     return item
+  },
+  updateVehicle: (id: number, patch: any) => {
+    const list = demoStore.getVehicles()
+    const idx = list.findIndex((v: any) => v.id === Number(id))
+    if (idx !== -1) {
+      list[idx] = { ...list[idx], ...patch }
+      setStore('vehicles', list)
+      return list[idx]
+    }
+    return null
   },
 
   getDrivers: () => getStore('drivers', initialDrivers),
   addDriver: (d: any) => {
     const list = demoStore.getDrivers()
-    const item = { ...d, id: Date.now() }
+    const item = {
+      ...d,
+      id: Date.now(),
+      employment_status: d.employment_status || 'active',
+    }
     list.unshift(item)
     setStore('drivers', list)
     return item
+  },
+  updateDriver: (id: number, patch: any) => {
+    const list = demoStore.getDrivers()
+    const idx = list.findIndex((d: any) => d.id === Number(id))
+    if (idx !== -1) {
+      list[idx] = { ...list[idx], ...patch }
+      setStore('drivers', list)
+      return list[idx]
+    }
+    return null
   },
 
   getBookings: () => getStore('bookings', initialBookings),
@@ -292,10 +350,17 @@ export const demoStore = {
   },
   addBooking: (b: any) => {
     const list = demoStore.getBookings()
+    const customers = demoStore.getCustomers()
+    let custName = b.customer_name
+    if (b.customer) {
+      const cObj = customers.find((c: any) => String(c.id) === String(b.customer) || c.customer_name === b.customer)
+      if (cObj) custName = cObj.customer_name
+    }
     const seq = list.length + 101
     const item = {
       ...b,
       id: Date.now(),
+      customer_name: custName || 'Direct Consignor',
       booking_number: `BK-0001-000${seq}`,
       lr_number: `LR-2026-000${seq}`,
       status: 'confirmed',
@@ -315,9 +380,34 @@ export const demoStore = {
   },
 
   getTrips: () => getStore('trips', initialTrips),
+  getTrip: (id: number) => {
+    return demoStore.getTrips().find((t: any) => t.id === Number(id)) || null
+  },
   addTrip: (t: any) => {
     const list = demoStore.getTrips()
-    const item = { ...t, id: Date.now(), trip_number: `TR-0001-00000${list.length + 1}`, status: 'planned' }
+    const vehicles = demoStore.getVehicles()
+    const drivers = demoStore.getDrivers()
+
+    let vehicleStr = t.vehicle
+    if (t.vehicle) {
+      const vObj = vehicles.find((v: any) => String(v.id) === String(t.vehicle) || v.registration_number === t.vehicle)
+      if (vObj) vehicleStr = vObj.registration_number
+    }
+
+    let driverStr = t.driver
+    if (t.driver) {
+      const dObj = drivers.find((d: any) => String(d.id) === String(t.driver) || d.full_name === t.driver)
+      if (dObj) driverStr = dObj.full_name
+    }
+
+    const item = {
+      ...t,
+      id: Date.now(),
+      trip_number: `TR-0001-${String(list.length + 1).padStart(6, '0')}`,
+      vehicle: vehicleStr || null,
+      driver: driverStr || null,
+      status: t.status || 'planned',
+    }
     list.unshift(item)
     setStore('trips', list)
     return item
@@ -333,15 +423,27 @@ export const demoStore = {
   },
 
   getInvoices: () => getStore('invoices', initialInvoices),
+  getInvoice: (id: number) => {
+    return demoStore.getInvoices().find((i: any) => i.id === Number(id)) || null
+  },
   addInvoice: (inv: any) => {
     const list = demoStore.getInvoices()
+    const customers = demoStore.getCustomers()
+    let custName = inv.customer
+    if (inv.customer) {
+      const c = customers.find((c: any) => String(c.id) === String(inv.customer) || c.customer_name === inv.customer)
+      if (c) custName = c.customer_name
+    }
+
     const subtotal = Number(inv.freight_amount || 0) + Number(inv.loading_charges || 0) + Number(inv.unloading_charges || 0)
-    const gst = (subtotal * (Number(inv.gst_rate || 5) / 100))
+    const gstRate = Number(inv.gst_rate || 5)
+    const gst = (subtotal * (gstRate / 100))
     const total = subtotal + gst
     const item = {
       ...inv,
       id: Date.now(),
-      invoice_number: `INV-0001-00000${list.length + 1}`,
+      customer: custName || 'Direct Billing',
+      invoice_number: `INV-0001-${String(list.length + 1).padStart(6, '0')}`,
       subtotal: subtotal.toFixed(2),
       gst_amount: gst.toFixed(2),
       total_amount: total.toFixed(2),
@@ -371,7 +473,27 @@ export const demoStore = {
   getExpenses: () => getStore('expenses', initialExpenses),
   addExpense: (e: any) => {
     const list = demoStore.getExpenses()
-    const item = { ...e, id: Date.now() }
+    const vehicles = demoStore.getVehicles()
+    const trips = demoStore.getTrips()
+
+    let vehStr = e.vehicle
+    if (e.vehicle) {
+      const v = vehicles.find((v: any) => String(v.id) === String(e.vehicle) || v.registration_number === e.vehicle)
+      if (v) vehStr = v.registration_number
+    }
+
+    let tripStr = e.trip
+    if (e.trip) {
+      const t = trips.find((t: any) => String(t.id) === String(e.trip) || t.trip_number === e.trip)
+      if (t) tripStr = t.trip_number
+    }
+
+    const item = {
+      ...e,
+      id: Date.now(),
+      vehicle: vehStr || null,
+      trip: tripStr || null,
+    }
     list.unshift(item)
     setStore('expenses', list)
     return item
@@ -414,4 +536,3 @@ export const demoStore = {
     }
   },
 }
-

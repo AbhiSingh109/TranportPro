@@ -84,7 +84,19 @@ export default function LoginPage() {
         </form>
 
         <div className="mt-6 p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-600">
-          <p className="font-bold text-slate-800 mb-1">Demo Credentials:</p>
+          <div className="flex items-center justify-between mb-2">
+            <p className="font-bold text-slate-800">Demo Credentials:</p>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('admin@transportpro.com')
+                setPassword('Admin@12345')
+              }}
+              className="text-blue-600 hover:text-blue-800 font-semibold underline text-xs"
+            >
+              Autofill Credentials
+            </button>
+          </div>
           <div className="flex justify-between py-0.5">
             <span>Email:</span>
             <span className="font-mono text-blue-700 font-semibold select-all">admin@transportpro.com</span>

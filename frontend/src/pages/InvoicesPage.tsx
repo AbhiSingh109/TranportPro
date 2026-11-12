@@ -9,6 +9,8 @@ export default function InvoicesPage() {
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false)
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null)
+  const [invoiceErrorMsg, setInvoiceErrorMsg] = useState<string | null>(null)
+  const [paymentErrorMsg, setPaymentErrorMsg] = useState<string | null>(null)
 
   const [invoiceForm, setInvoiceForm] = useState({
     customer: '',
@@ -45,6 +47,11 @@ export default function InvoicesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invoices'] })
       setIsInvoiceModalOpen(false)
+      setInvoiceErrorMsg(null)
+    },
+    onError: (err: any) => {
+      const msg = err.response?.data?.detail || err.message || 'Failed to create invoice'
+      setInvoiceErrorMsg(typeof msg === 'string' ? msg : JSON.stringify(msg))
     },
   })
 
@@ -53,6 +60,11 @@ export default function InvoicesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invoices'] })
       setIsPaymentModalOpen(false)
+      setPaymentErrorMsg(null)
+    },
+    onError: (err: any) => {
+      const msg = err.response?.data?.detail || err.message || 'Failed to record payment'
+      setPaymentErrorMsg(typeof msg === 'string' ? msg : JSON.stringify(msg))
     },
   })
 
@@ -90,7 +102,13 @@ export default function InvoicesPage() {
           <h1 className="text-2xl font-bold text-gray-900">Freight Billing & Invoices</h1>
           <p className="text-sm text-gray-500">Generate GST freight invoices, record customer payments, and track balances</p>
         </div>
-        <button onClick={() => setIsInvoiceModalOpen(true)} className="btn-primary flex items-center gap-2">
+        <button
+          onClick={() => {
+            setInvoiceErrorMsg(null)
+            setIsInvoiceModalOpen(true)
+          }}
+          className="btn-primary flex items-center gap-2"
+        >
           <Plus size={16} /> Create Invoice
         </button>
       </div>
@@ -161,6 +179,13 @@ export default function InvoicesPage() {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
             <h2 className="text-lg font-bold text-gray-900 mb-4">Generate Freight Invoice</h2>
+
+            {invoiceErrorMsg && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2.5 rounded-lg text-sm mb-4">
+                {invoiceErrorMsg}
+              </div>
+            )}
+
             <form onSubmit={handleInvoiceSubmit} className="space-y-4">
               <div>
                 <label className="label">Customer *</label>
@@ -265,6 +290,13 @@ export default function InvoicesPage() {
             <p className="text-xs text-gray-500 mb-4">
               Invoice <span className="font-mono font-bold text-gray-800">{selectedInvoice.invoice_number}</span> • Outstanding: ₹{Number(selectedInvoice.outstanding_amount).toLocaleString('en-IN')}
             </p>
+
+            {paymentErrorMsg && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2.5 rounded-lg text-sm mb-4">
+                {paymentErrorMsg}
+              </div>
+            )}
+
             <form onSubmit={handlePaymentSubmit} className="space-y-4">
               <div>
                 <label className="label">Amount Paid (₹) *</label>

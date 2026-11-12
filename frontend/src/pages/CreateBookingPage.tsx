@@ -37,11 +37,17 @@ export default function CreateBookingPage() {
     special_instructions: '',
   })
 
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+
   const mutation = useMutation({
     mutationFn: (data: object) => createBooking(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookings'] })
       navigate('/bookings')
+    },
+    onError: (err: any) => {
+      const msg = err.response?.data?.detail || err.message || 'Failed to create consignment booking'
+      setErrorMsg(typeof msg === 'string' ? msg : JSON.stringify(msg))
     },
   })
 
@@ -61,6 +67,12 @@ export default function CreateBookingPage() {
           <p className="text-sm text-gray-500">Generate LR/GR receipt and book shipment</p>
         </div>
       </div>
+
+      {errorMsg && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-6">
+          {errorMsg}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Customer & Route */}
