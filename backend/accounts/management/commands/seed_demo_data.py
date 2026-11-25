@@ -22,16 +22,16 @@ class Command(BaseCommand):
 
         # 1. Agency
         agency, created = Agency.objects.get_or_create(
-            name='National Express Logistics',
-            defaults={'address': 'Transport Nagar, Ring Road, Indore, Madhya Pradesh'}
+            name='Express Logistics',
+            defaults={'address': 'Main Chowk, Kala-Amb, Sirmaur District, Himachal Pradesh 173030'}
         )
 
         # 2. Users
         admin_user, _ = User.objects.get_or_create(
-            email='admin@transportpro.com',
+            email='admin@expresslogistics.com',
             defaults={
-                'first_name': 'Vikram',
-                'last_name': 'Singhania',
+                'first_name': 'Jitendar',
+                'last_name': 'Singh',
                 'agency': agency,
                 'is_staff': True,
                 'is_superuser': True,
@@ -263,7 +263,7 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(
             'Successfully seeded TransportPro demo data!\n'
-            'Admin Login: admin@transportpro.com / Admin@12345\n'
-            'Agency: National Express Logistics'
+            'Admin Login: admin@expresslogistics.com / Admin@12345\n'
+            'Firm: Express Logistics, Kala-Amb (GSTIN: 06BHWPS1453H2ZU)'
         ))
 

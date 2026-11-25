@@ -130,13 +130,13 @@ export const login = async (email: string, password: string) => {
     !import.meta.env.VITE_API_URL
 
   const checkDemoCreds = () => {
-    if (email.trim().toLowerCase() === 'admin@transportpro.com' && password === 'Admin@12345') {
+    if (email.trim().toLowerCase() === 'admin@expresslogistics.com' && password === 'Admin@12345') {
       const demoUser = {
         id: 1,
-        email: 'admin@transportpro.com',
-        first_name: 'Vikram',
-        last_name: 'Singhania',
-        agency: { id: 1, name: 'National Express Logistics' },
+        email: 'admin@expresslogistics.com',
+        first_name: 'Jitendar',
+        last_name: 'Singh',
+        agency: { id: 1, name: 'Express Logistics' },
         is_staff: true,
       }
       return {
@@ -178,10 +178,10 @@ export const logout = async () => {
 export const getMe = async () => {
   const demoUser = {
     id: 1,
-    email: 'admin@transportpro.com',
-    first_name: 'Vikram',
-    last_name: 'Singhania',
-    agency: { id: 1, name: 'National Express Logistics' },
+    email: 'admin@expresslogistics.com',
+    first_name: 'Jitendar',
+    last_name: 'Singh',
+    agency: { id: 1, name: 'Express Logistics' },
     is_staff: true,
   }
 
