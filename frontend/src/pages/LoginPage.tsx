@@ -116,24 +116,27 @@ export default function LoginPage() {
           <div className="mt-6 p-4 bg-blue-50 border border-blue-100 rounded-2xl text-xs text-blue-800">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5 font-bold text-blue-900">
-                <ShieldCheck size={14} className="text-blue-600" /> Demo Access
+                <ShieldCheck size={14} className="text-blue-600" /> One-Click Demo Access
               </div>
               <button
                 type="button"
-                onClick={() => { setEmail('admin@transportpro.com'); setPassword('Admin@12345') }}
-                className="text-blue-600 hover:text-blue-800 font-semibold underline text-xs"
+                onClick={() => { setEmail('admin@expresslogistics.com'); setPassword('Admin@12345') }}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1 rounded-lg text-xs transition-colors shadow-sm"
               >
-                Autofill
+                Autofill Credentials
               </button>
             </div>
             <div className="space-y-1 font-mono">
               <div className="flex justify-between">
                 <span className="text-blue-600">Email:</span>
-                <span className="font-bold select-all">admin@transportpro.com</span>
+                <span className="font-bold select-all">admin@expresslogistics.com</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-blue-600">Password:</span>
                 <span className="font-bold select-all">Admin@12345</span>
+              </div>
+              <div className="text-[11px] text-blue-500 pt-1 font-sans">
+                (Also accepts: <span className="font-mono font-semibold">admin@transportpro.com</span>)
               </div>
             </div>
           </div>

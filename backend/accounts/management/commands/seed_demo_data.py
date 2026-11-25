@@ -40,6 +40,19 @@ class Command(BaseCommand):
         admin_user.set_password('Admin@12345')
         admin_user.save()
 
+        legacy_user, _ = User.objects.get_or_create(
+            email='admin@transportpro.com',
+            defaults={
+                'first_name': 'Jitendar',
+                'last_name': 'Singh',
+                'agency': agency,
+                'is_staff': True,
+                'is_superuser': True,
+            }
+        )
+        legacy_user.set_password('Admin@12345')
+        legacy_user.save()
+
         # 3. Customers
         c1, _ = Customer.objects.get_or_create(
             agency=agency,
