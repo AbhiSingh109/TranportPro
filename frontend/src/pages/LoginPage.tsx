@@ -19,16 +19,12 @@ export default function LoginPage() {
       await login(email, password)
       navigate('/dashboard')
     } catch (err: any) {
-      if (!err.response) {
-        setError('Login failed. Please check your credentials.')
-      } else {
-        setError(
-          err.response?.data?.non_field_errors?.[0] ||
-          err.response?.data?.error ||
-          err.response?.data?.detail ||
-          'Invalid email or password.'
-        )
-      }
+      const msg =
+        err?.response?.data?.non_field_errors?.[0] ||
+        err?.response?.data?.error ||
+        err?.response?.data?.detail ||
+        'Invalid email or password. Try using the demo credentials below.'
+      setError(msg)
     } finally {
       setLoading(false)
     }
@@ -116,14 +112,27 @@ export default function LoginPage() {
           <div className="mt-6 p-4 bg-blue-50 border border-blue-100 rounded-2xl text-xs text-blue-800">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5 font-bold text-blue-900">
-                <ShieldCheck size={14} className="text-blue-600" /> One-Click Demo Access
+                <ShieldCheck size={14} className="text-blue-600" /> Demo Access
               </div>
               <button
                 type="button"
-                onClick={() => { setEmail('admin@expresslogistics.com'); setPassword('Admin@12345') }}
+                onClick={async () => {
+                  setEmail('admin@transportpro.com')
+                  setPassword('Admin@12345')
+                  setError('')
+                  setLoading(true)
+                  try {
+                    await login('admin@transportpro.com', 'Admin@12345')
+                    navigate('/dashboard')
+                  } catch (err: any) {
+                    setError(err?.response?.data?.non_field_errors?.[0] || 'Demo login failed.')
+                  } finally {
+                    setLoading(false)
+                  }
+                }}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1 rounded-lg text-xs transition-colors shadow-sm"
               >
-                Autofill Credentials
+                One-Click Login
               </button>
             </div>
             <div className="space-y-1 font-mono">

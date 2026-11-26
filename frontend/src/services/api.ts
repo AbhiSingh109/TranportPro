@@ -131,6 +131,7 @@ export const login = async (email: string, password: string) => {
 
   const checkDemoCreds = () => {
     const cleanEmail = email.trim().toLowerCase()
+    const cleanPassword = password.trim()
     const validEmails = [
       'admin@transportpro.com',
       'admin@expresslogistics.com',
@@ -138,10 +139,15 @@ export const login = async (email: string, password: string) => {
       'admin@transport.com',
     ]
 
-    if (
-      validEmails.includes(cleanEmail) &&
-      (password === 'Admin@12345' || password.toLowerCase() === 'admin@12345')
-    ) {
+    // Accept any recognized email with the demo password (case-insensitive)
+    const isValidEmail = validEmails.includes(cleanEmail)
+    const isValidPassword =
+      cleanPassword === 'Admin@12345' ||
+      cleanPassword.toLowerCase() === 'admin@12345' ||
+      cleanPassword === 'admin@12345' ||
+      cleanPassword === 'Admin@1234' // common typo without last digit - reject but show helpful message
+
+    if (isValidEmail && (cleanPassword === 'Admin@12345' || cleanPassword.toLowerCase() === 'admin@12345')) {
       const demoUser = {
         id: 1,
         email: cleanEmail,
@@ -158,7 +164,7 @@ export const login = async (email: string, password: string) => {
       }
     }
     const err: any = new Error('Invalid email or password.')
-    err.response = { status: 400, data: { non_field_errors: ['Invalid email or password.'] } }
+    err.response = { status: 400, data: { non_field_errors: ['Invalid email or password. Use the demo credentials shown below.'] } }
     throw err
   }
 
